@@ -1,0 +1,18 @@
+{
+  "name": "De Necrezut - Oprim dezinformarea",
+  "version": "1.0.2",
+  "manifest_version": 2,
+  "description": "Avertizeaza utilizatorii despre siteurile care prezinta in mod frecvent dezinformari sau stiri false.",
+  "homepage_url": "https://denecrezut.faction.ro",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_scripts": [ {
+     "css": [ "css/hint.min.css"],
+     "js": [ "js/jquery.min.js", "js/script.js" ],
+     "matches": [ "*://*/*" ],
+     "run_at": "document_end"
+  } ]
+}
