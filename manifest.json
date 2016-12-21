@@ -1,18 +1,35 @@
 {
   "name": "De Necrezut - Oprim dezinformarea",
-  "version": "1.0.2",
+  "version": "1.0.6",
   "manifest_version": 2,
   "description": "Avertizeaza utilizatorii despre siteurile care prezinta in mod frecvent dezinformari sau stiri false.",
   "homepage_url": "https://denecrezut.faction.ro",
+  "browser_action": {
+    "default_icon": "icons/icon16.png"
+  },
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "content_scripts": [ {
-     "css": [ "css/hint.min.css"],
-     "js": [ "js/jquery.min.js", "js/script.js" ],
-     "matches": [ "*://*/*" ],
-     "run_at": "document_end"
-  } ]
+  "applications": {
+    "gecko": {
+      "id": "{c7a6dc04-70bb-4518-95ca-83515d1e8046}"
+    }
+  },
+  "content_scripts": [
+    {
+      "css": [
+        "css/hint.min.css"
+      ],
+      "js": [
+        "js/jquery.min.js",
+        "js/script.js"
+      ],
+      "matches": [
+        "*://*/*"
+      ],
+      "run_at": "document_end"
+    }
+  ]
 }
