@@ -137,17 +137,17 @@ chrome.extension.sendMessage({}, function(response) {
                         console.log($(badLinksObjects[i]).attr('class'));
                         if ($(badLinksObjects[i]).parent().hasClass("_42ef")) {
                             $(badLinksObjects[i]).parent().parent().parent().removeClass('clearfix').addClass('hint--error hint--large hint--bottom-right fakenews');
-                            $(badLinksObjects[i]).parent().parent().parent().attr('aria-label', 'Acest site nu este o sursa sigura de informare.');
+                            $(badLinksObjects[i]).parent().parent().parent().attr('aria-label', 'Pare de necrezut? Verifica informatia si din alte surse.');
                         }
                         else {
                             $(badLinksObjects[i]).parent().addClass('hint--error hint--large hint--top-right fakenews');
-                            $(badLinksObjects[i]).parent().attr('aria-label', 'Acest site nu este o sursa sigura de informare.');
+                            $(badLinksObjects[i]).parent().attr('aria-label', 'Pare de necrezut? Verifica informatia si din alte surse.');
                         }
                     }
                 }
                 else {
                     if (links.indexOf(window.location.hostname.replace('www.', ''))!=-1) {
-                        $("body").append("<div class='hint--error hint--large hint--align-center hint--top hint--red hint--bounce fakenews' style='position: fixed; width: 100%; left: -240px; text-align: center; z-index: 99999999; bottom: 0px;' aria-label='Acest site nu este considerat o sursa sigura de informare.'></div><style>.hint--error::before { display: none; }</style>");
+                        $("body").append("<div class='hint--error hint--large hint--align-center hint--top hint--red hint--bounce fakenews' style='position: fixed; width: 100%; left: -240px; text-align: center; z-index: 99999999; bottom: 0px;' aria-label='Pare de necrezut? Verifica informatia si din alte surse.'></div><style>.hint--error::before { display: none; }</style>");
                     }
                     stop = true;
                 }
