@@ -97,14 +97,12 @@ chrome.extension.sendMessage({}, function(response) {
                 'ro.blastingnews.com',
                 'inliniedreapta.net',
                 'inliniedreapta.ro',
-                'aktual24.ro',
                 'stireazilei.com',
                 'flux24.ro',
                 'deretinut.net',
                 'ziaruldegarda.ro',
                 'presalibera.net',
                 'teinformam.ro',
-                'internet-bun.info',
                 'perfectmedia.tv',
                 'stiriblana.pw',
                 'impactpress.ro',
@@ -120,9 +118,8 @@ chrome.extension.sendMessage({}, function(response) {
                 'infopuls.ro',
                 'invectiva.ro',
                 'explozivnews24.ro',
-                'voceavalcii.ro',
-                'meritocratia.ro',
-                'alternativenews.ro'
+                'alternativenews.ro',
+                'exclusiv24.ro'
             ];
 
             var didScroll = false;
@@ -146,14 +143,14 @@ chrome.extension.sendMessage({}, function(response) {
                             $(badLinksObjects[i]).parent().parent().parent().attr('aria-label', 'Acest site nu este o sursa sigura de informare.');
                         }
                         else {
-                            $(badLinksObjects[i]).parent().addClass('hint--error hint--large hint--bottom-right fakenews');
+                            $(badLinksObjects[i]).parent().addClass('hint--error hint--large hint--top-right fakenews');
                             $(badLinksObjects[i]).parent().attr('aria-label', 'Acest site nu este o sursa sigura de informare.');
                         }
                     }
                 }
                 else {
                     if (links.indexOf(window.location.hostname.replace('www.', ''))!=-1) {
-                        $("body").append("<div class='hint--error hint--large hint--align-center hint--top hint--bounce fakenews' style='position: fixed; width: 100%; left: -50%; text-align: center; z-index: 99999999; bottom: 0px;' aria-label='Acest site nu este considerat o sursa sigura de informare.'></div><style>.hint--error::before { display: none; }</style>");
+                        $("body").append("<div class='hint--error hint--large hint--align-center hint--top hint--red hint--bounce fakenews' style='position: fixed; width: 100%; left: -240px; text-align: center; z-index: 99999999; bottom: 0px;' aria-label='Acest site nu este considerat o sursa sigura de informare.'></div><style>.hint--error::before { display: none; }</style>");
                     }
                     stop = true;
                 }
