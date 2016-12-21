@@ -269,7 +269,7 @@
 }
 .hint--large:after {
     width: 460px;
-    text-align: left;
+    text-align: center;
 }
 .hint--align-center:after {
     text-align: center !important;
