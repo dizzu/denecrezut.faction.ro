@@ -205,7 +205,6 @@ chrome.extension.sendMessage({}, function(response) {
                     $(this).addClass('marked');
                     var href = decodeURI($(this).attr('ajaxify'));
                     var json_params = JSON.parse(getURLParameter('context', href));
-                    console.log(json_params);
                     if (typeof json_params.story_permalink_token != "undefined") {
                         var array = json_params.story_permalink_token.split(':');
                         var fb_id = array[2];
@@ -215,10 +214,21 @@ chrome.extension.sendMessage({}, function(response) {
                     }
 
                     $.get('https://graph.facebook.com/?id='+fb_id+'&access_token='+access_token, function( data ) {
-                        console.log(data);
+                        if (data.id.indexOf('_')!=-1) {
+                            var array = data.id.split('_');
+                            data.id = array[1];
+                        }
                         var data_to_send = {story_id: data.id, user_id: current_fb_id, name: data.name, description: data.description, link: data.link, picture: data.picture};
+                        console.log('Sending following data to De Necrezut:');
+                        console.log(data_to_send);
                         $.post('https://report.faction.ro/report.php', data_to_send, function(data) {
-                            console.log(data);
+                            data = JSON.parse(data);
+                            if (data.status==1) {
+                                console.log('%c Data successfully saved on the De Necrezut website.', 'background: green; color: white;');
+                            }
+                            else {
+                                console.log('%c There was a problem saving the data on the De Necrezut website.', 'background: red; color: white;');
+                            }
                         });
                     });
 
