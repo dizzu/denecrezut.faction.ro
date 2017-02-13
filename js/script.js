@@ -218,18 +218,24 @@ chrome.extension.sendMessage({}, function(response) {
                             var array = data.id.split('_');
                             data.id = array[1];
                         }
-                        var data_to_send = {story_id: data.id, user_id: current_fb_id, name: data.name, description: data.description, link: data.link, picture: data.picture};
-                        console.log('Sending following data to De Necrezut:');
-                        console.log(data_to_send);
-                        $.post('https://report.faction.ro/report.php', data_to_send, function(data) {
-                            data = JSON.parse(data);
-                            if (data.status==1) {
-                                console.log('%c Data successfully saved on the De Necrezut website.', 'background: green; color: white;');
-                            }
-                            else {
-                                console.log('%c There was a problem saving the data on the De Necrezut website.', 'background: red; color: white;');
-                            }
-                        });
+                        if (data.link) {
+                            var data_to_send = {story_id: data.id, user_id: current_fb_id, name: data.name, description: data.description, link: data.link, picture: data.picture};
+                            console.log('Sending following data to De Necrezut:');
+                            console.log(data_to_send);
+                            $.post('https://report.faction.ro/report.php', data_to_send, function(data) {
+                                data = JSON.parse(data);
+                                if (data.status==1) {
+                                    console.log('%c Data successfully saved on the De Necrezut website.', 'background: green; color: white;');
+                                }
+                                else {
+                                    console.log('%c There was a problem saving the data on the De Necrezut website.', 'background: red; color: white;');
+                                }
+                            });
+                        }
+                        else {
+                            console.log('%c Are you reporting a post shared by a personal profile? If not, please report the problem with a screenshot.', 'background: red; color: white;');
+                            console.log('%c Note: Articles shared by a personal profile cannot be reported to De Necrezut (yet?) :(', 'background: orange; color: white;');
+                        }
                     });
 
                 });
