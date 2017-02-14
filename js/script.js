@@ -157,7 +157,7 @@ chrome.extension.sendMessage({}, function(response) {
                 }
                 else {
                     if (links.indexOf(window.location.hostname.replace('www.', ''))!=-1) {
-                        $("body").append("<div class='hint--error hint--large hint--align-center hint--top hint--red hint--bounce fakenews' style='position: fixed; width: 100%; left: -50%; text-align: center; z-index: 99999999; top: 55px;' aria-label='Cerceteaza inainte sa crezi! Verifica informatia si din alte surse.'></div><style>.hint--error::before { display: none; } .hint--large::after { width: 100% !important; }</style>");
+                        $("body").append("<div class='hint--error hint--large hint--align-center hint--top hint--red hint--bounce fakenews' style='position: fixed; width: 100%; left: -50%; text-align: center; z-index: 99999999; top: 35px;' aria-label='Cercetează înainte să crezi! Verifică informația și din alte surse.'></div><style>.hint--error::before { display: none; } .hint--large::after { width: 100% !important; font-weight: bold; }</style>");
                     }
                     stop = true;
                 }
@@ -220,21 +220,21 @@ chrome.extension.sendMessage({}, function(response) {
                         }
                         if (data.link) {
                             var data_to_send = {story_id: data.id, user_id: current_fb_id, name: data.name, description: data.description, link: data.link, picture: data.picture};
-                            console.log('Sending following data to De Necrezut:');
-                            console.log(data_to_send);
+                            // console.log('Sending following data to De Necrezut:');
+                            // console.log(data_to_send);
                             $.post('https://report.faction.ro/report.php', data_to_send, function(data) {
                                 data = JSON.parse(data);
                                 if (data.status==1) {
-                                    console.log('%c Data successfully saved on the De Necrezut website.', 'background: green; color: white;');
+                                    // console.log('%c Data successfully saved also on the De Necrezut website.', 'background: green; color: white;');
                                 }
                                 else {
-                                    console.log('%c There was a problem saving the data on the De Necrezut website.', 'background: red; color: white;');
+                                    // console.log('%c There was a problem saving the data on the De Necrezut website.', 'background: red; color: white;');
                                 }
                             });
                         }
                         else {
-                            console.log('%c Are you reporting a post shared by a personal profile? If not, please report the problem with a screenshot.', 'background: red; color: white;');
-                            console.log('%c Note: Articles shared by a personal profile cannot be reported to De Necrezut (yet?) :(', 'background: orange; color: white;');
+                            // console.log('%c Are you reporting a post shared by a personal profile? If not, please report the problem with a screenshot.', 'background: red; color: white;');
+                            // console.log('%c Note: Articles shared by a personal profile cannot be reported to De Necrezut (yet?) :(', 'background: orange; color: white;');
                         }
                     });
 
