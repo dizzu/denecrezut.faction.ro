@@ -124,6 +124,8 @@ chrome.extension.sendMessage({}, function(response) {
                 'antena3.ro',
                 'curentul.info',
                 'justitiarul.ro',
+                'sibiu.justitiarul.ro',
+                'certitudinea.ro',
                 'stiri.rol.ro',
                 'dcnews.ro',
                 'rdo.ro',
@@ -142,11 +144,17 @@ chrome.extension.sendMessage({}, function(response) {
 
             var access_token = '';
             var current_fb_id = '';
-            var fb_dtsg = document.getElementsByName('fb_dtsg')[0].value;
+            var fb_dtsg = '';
+
+             var debug = 0;
+            if (window.location.href.match(/#debug/)) {
+                debug = 1;
+            }
 
             function linkWarning() {
                 processing = true;
                 if (window.location.hostname=='www.facebook.com') {
+                    fb_dtsg = document.getElementsByName('fb_dtsg')[0].value;
                     var badLinksObjects = $(badLinks);
                     for (var i = 0, len = badLinksObjects.length; i < len; i++) {
                         if ($(badLinksObjects[i]).parent().hasClass("_42ef")) {
@@ -188,22 +196,21 @@ chrome.extension.sendMessage({}, function(response) {
                 }
             }
 
-            // this function makes a request to get an access token with the most basic permissions.
-            function get_token() {
-                var id_app = '165907476854626';
-                $.post('https://www.facebook.com/v1.0/dialog/oauth/confirm?fb_dtsg=' + fb_dtsg + '&app_id=' + id_app + '&redirect_uri=fbconnect://success&display=popup&access_token=&sdk=&from_post=1&private=&tos=&login=&read=&write=&extended=&social_confirm=&confirm=&seen_scopes=&auth_type=&auth_token=&auth_nonce=&default_audience=&ref=Default&return_format=access_token&domain=&sso_device=ios&__CONFIRM__=1', function (responseText) {
-                        access_token = responseText.match(/access_token=(.*?)&/)[1];
-                        if (access_token) {
-                            get_current_fb_id(access_token);
-                        }
-                    });
-            }
-
             // this function gets the facebook id for the current user so that we can know who reported the fake news (as described in the privacy policy).
-            function get_current_fb_id(access_token) {
-                $.get('https://graph.facebook.com/me?access_token='+access_token, function( data ) {
-                    current_fb_id = data.id;
-                });
+            function get_current_fb_id() {
+                if (debug) {
+                    console.trace();
+                }
+                var userid = '';
+                try {
+                    userid = document.cookie.match(/c_user=(\d+)/)[1];
+                } catch (e) {
+                    console.log('problem getting logged in user id: ' + e);
+                }
+                if (debug) {
+                    console.log("userid= " + userid);
+                }
+                return userid;
             }
 
             linkWarning();
@@ -223,42 +230,28 @@ chrome.extension.sendMessage({}, function(response) {
                         var fb_id = json_params.reportable_ent_token;
                     }
 
-                    // get details about the reported story from facebook graph
-                    $.get('https://graph.facebook.com/?id='+fb_id+'&access_token='+access_token, function( data ) {
-                        if (data.id.indexOf('_')!=-1) {
-                            var array = data.id.split('_');
-                            data.id = array[1];
-                        }
+                    current_fb_id = get_current_fb_id();
+                    if (fb_id) {
+                        var data_to_send = {
+                            story_id: fb_id,
+                            user_id: current_fb_id
+                        };
 
-                        if (data.link) {
-                            var data_to_send = {
-                                story_id: data.id,
-                                user_id: current_fb_id,
-                                name: data.name,
-                                description: data.description,
-                                link: data.link,
-                                picture: data.picture
-                            };
-
-                            $.post('https://report.faction.ro/report.php', data_to_send, function(data) {
-                                data = JSON.parse(data);
+                        $.post('https://report.faction.ro/report.php', data_to_send, function(data) {
+                            data = JSON.parse(data);
+                            if (debug) {
                                 if (data.status==1) {
-                                    // console.log('%c Data successfully saved also on the De Necrezut website.', 'background: green; color: white;');
+                                    console.log('%c Data successfully saved also on the De Necrezut website.', 'background: green; color: white;');
                                 }
                                 else {
-                                    // console.log('%c There was a problem saving the data on the De Necrezut website.', 'background: red; color: white;');
+                                    console.log('%c There was a problem saving the data on the De Necrezut website.', 'background: red; color: white;');
                                 }
-                            });
-                        }
-                        else {
-                            // console.log('%c Note: Articles shared by a personal profile cannot be reported to De Necrezut (yet?) :(', 'background: orange; color: white;');
-                        }
-                    });
+                            }
+                        });
+                    }
 
                 });
             }, 500);
-
-            get_token();
 
             setInterval(function() {
                 if(didScroll && !processing && !stop) {
