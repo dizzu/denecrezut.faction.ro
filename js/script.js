@@ -4,7 +4,7 @@ chrome.extension.sendMessage({}, function(response) {
             jQuery.expr[":"].icontains = jQuery.expr.createPseudo(function (arg) {
                 return function (elem) {
                     var found = jQuery(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
-                    if (jQuery(elem).hasClass('fakenews')) { 
+                    if (jQuery(elem).hasClass('fakenews')) {
                         return false;
                     }
                     if (found) {
@@ -140,6 +140,10 @@ chrome.extension.sendMessage({}, function(response) {
                 return badLink;
             }).join();
 
+            var access_token = '';
+            var current_fb_id = '';
+            var fb_dtsg = document.getElementsByName('fb_dtsg')[0].value;
+
             function linkWarning() {
                 processing = true;
                 if (window.location.hostname=='www.facebook.com') {
@@ -164,41 +168,47 @@ chrome.extension.sendMessage({}, function(response) {
                 processing = false;
             };
 
-            linkWarning();
-
-            document.addEventListener('scroll', doThisStuffOnScroll);
-
             function doThisStuffOnScroll() {
                 didScroll = true;
             }
 
-            function getURLParameter(name, string) {
-                return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(string) || [null, ''])[1].replace(/\+/g, '%20')) || null;
-            }
+            function getURLParameter(parameter_name, page_url) {
+                var split_page_url = page_url.split('?')[1];
+                if (split_page_url == null) {
+                    return;
+                }
 
-            var access_token = '';
-            var current_fb_id = '';
-            var fb_dtsg = document.getElementsByName('fb_dtsg')[0].value;
+                var url_variables = split_page_url.split('&');
 
-            function get_token() {
-                var id_app = '165907476854626';
-                var http = new XMLHttpRequest;
-                http.open('POST', 'https://www.facebook.com/v1.0/dialog/oauth/confirm');
-                http.send('fb_dtsg=' + fb_dtsg + '&app_id=' + id_app + '&redirect_uri=fbconnect://success&display=popup&access_token=&sdk=&from_post=1&private=&tos=&login=&read=&write=&extended=&social_confirm=&confirm=&seen_scopes=&auth_type=&auth_token=&auth_nonce=&default_audience=&ref=Default&return_format=access_token&domain=&sso_device=ios&__CONFIRM__=1');
-                http.onreadystatechange = function() {
-                    if (http.readyState == 4 && http.status == 200) {
-                        var data = http.responseText.match(/access_token=(.*?)&/)[1];
-                        access_token = data;
-                        get_current_fb_id();
+                for (var i = 0; i < url_variables.length; i++) {
+                    var current_parameter_name = url_variables[i].split('=');
+                    if (current_parameter_name[0] == parameter_name) {
+                        return decodeURIComponent(current_parameter_name[1]);
                     }
                 }
             }
 
-            function get_current_fb_id() {
+            // this function makes a request to get an access token with the most basic permissions.
+            function get_token() {
+                var id_app = '165907476854626';
+                $.post('https://www.facebook.com/v1.0/dialog/oauth/confirm?fb_dtsg=' + fb_dtsg + '&app_id=' + id_app + '&redirect_uri=fbconnect://success&display=popup&access_token=&sdk=&from_post=1&private=&tos=&login=&read=&write=&extended=&social_confirm=&confirm=&seen_scopes=&auth_type=&auth_token=&auth_nonce=&default_audience=&ref=Default&return_format=access_token&domain=&sso_device=ios&__CONFIRM__=1', function (responseText) {
+                        access_token = responseText.match(/access_token=(.*?)&/)[1];
+                        if (access_token) {
+                            get_current_fb_id(access_token);
+                        }
+                    });
+            }
+
+            // this function gets the facebook id for the current user so that we can know who reported the fake news (as described in the privacy policy).
+            function get_current_fb_id(access_token) {
                 $.get('https://graph.facebook.com/me?access_token='+access_token, function( data ) {
                     current_fb_id = data.id;
                 });
             }
+
+            linkWarning();
+
+            document.addEventListener('scroll', doThisStuffOnScroll);
 
             setInterval(function() {
                 $("ul.uiList a:not(.marked)[ajaxify*='MARK_AS_FALSE_NEWS']").unbind().one("click", function() {
@@ -213,15 +223,23 @@ chrome.extension.sendMessage({}, function(response) {
                         var fb_id = json_params.reportable_ent_token;
                     }
 
+                    // get details about the reported story from facebook graph
                     $.get('https://graph.facebook.com/?id='+fb_id+'&access_token='+access_token, function( data ) {
                         if (data.id.indexOf('_')!=-1) {
                             var array = data.id.split('_');
                             data.id = array[1];
                         }
+
                         if (data.link) {
-                            var data_to_send = {story_id: data.id, user_id: current_fb_id, name: data.name, description: data.description, link: data.link, picture: data.picture};
-                            // console.log('Sending following data to De Necrezut:');
-                            // console.log(data_to_send);
+                            var data_to_send = {
+                                story_id: data.id,
+                                user_id: current_fb_id,
+                                name: data.name,
+                                description: data.description,
+                                link: data.link,
+                                picture: data.picture
+                            };
+
                             $.post('https://report.faction.ro/report.php', data_to_send, function(data) {
                                 data = JSON.parse(data);
                                 if (data.status==1) {
@@ -233,7 +251,6 @@ chrome.extension.sendMessage({}, function(response) {
                             });
                         }
                         else {
-                            // console.log('%c Are you reporting a post shared by a personal profile? If not, please report the problem with a screenshot.', 'background: red; color: white;');
                             // console.log('%c Note: Articles shared by a personal profile cannot be reported to De Necrezut (yet?) :(', 'background: orange; color: white;');
                         }
                     });
