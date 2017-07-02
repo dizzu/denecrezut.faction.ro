@@ -1,35 +1,42 @@
 {
-  "name": "De Necrezut",
-  "version": "1.0.14",
-  "manifest_version": 2,
-  "description": "Constientizeaza utilizatorii asupra informatiilor citite pe internet.",
-  "homepage_url": "https://denecrezut.faction.ro",
-  "browser_action": {
-    "default_icon": "icons/icon16.png"
-  },
-  "permissions": [
-    "https://www.facebook.com/",
-    "https://graph.facebook.com/",
-    "https://report.faction.ro/"
-  ],
-  "icons": {
-    "16": "icons/icon16.png",
-    "48": "icons/icon48.png",
-    "128": "icons/icon128.png"
-  },
-  "content_scripts": [
-    {
-      "css": [
-        "css/hint.min.css"
-      ],
-      "js": [
-        "js/jquery.min.js",
-        "js/script.js"
-      ],
-      "matches": [
-        "*://*/*"
-      ],
-      "run_at": "document_end"
+    "author": "John Doe",
+    "browser_action": {
+        "default_icon": {
+            "16": "icons/icon16.png"
+        }
+    },
+    "content_scripts": [
+        {
+            "css": [
+                "css/hint.min.css"
+            ],
+            "js": [
+                "js/jquery.min.js",
+                "js/script.js"
+            ],
+            "matches": [
+                "*://*/*"
+            ],
+            "run_at": "document_end"
+        }
+    ],
+    "description": "Constientizeaza utilizatorii asupra informatiilor citite pe internet.",
+    "homepage_url": "https://denecrezut.faction.ro",
+    "icons": {
+        "16": "icons/icon16.png",
+        "48": "icons/icon48.png",
+        "128": "icons/icon128.png"
+    },
+    "manifest_version": 2,
+    "name": "De Necrezut",
+    "permissions": [
+        "https://www.facebook.com/",
+        "https://graph.facebook.com/",
+        "https://report.faction.ro/"
+    ],
+    "version": "1.0.14",
+    "-ms-preload": {
+        "backgroundScript": "backgroundScriptsAPIBridge.js",
+        "contentScript": "contentScriptsAPIBridge.js"
     }
-  ]
 }
