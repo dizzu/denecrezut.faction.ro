@@ -129,7 +129,8 @@ chrome.extension.sendMessage({}, function(response) {
                 'stiri.rol.ro',
                 'dcnews.ro',
                 'rdo.ro',
-                'bzi.ro'
+                'bzi.ro',
+                'socialistul.com'
             ];
 
             var didScroll = false;
