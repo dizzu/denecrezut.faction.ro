@@ -3,7 +3,7 @@ chrome.extension.sendMessage({}, function(response) {
         if (document.readyState === "complete") {
             jQuery.expr[":"].icontains = jQuery.expr.createPseudo(function (arg) {
                 return function (elem) {
-                    var found = jQuery(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
+                    var found = jQuery(elem).text().toUpperCase().indexOf(arg.toUpperCase()) == 0;
                     if (jQuery(elem).hasClass('fakenews')) {
                         return false;
                     }
@@ -89,7 +89,6 @@ chrome.extension.sendMessage({}, function(response) {
                 'soim.ro',
                 'gandeste.org',
                 'recentnews.ro',
-                'eufrosin.wordpress.com',
                 'criterii.ro',
                 'reporteronline.net',
                 'lupuldacicblogg.wordpress.com',
@@ -117,6 +116,7 @@ chrome.extension.sendMessage({}, function(response) {
                 'explozivnews24.ro',
                 'alternativenews.ro',
                 'exclusiv24.ro',
+                'STIRI.ROL.RO',
                 'rol.ro',
                 'grupul.ro',
                 'stiripesurse.ro',
@@ -130,6 +130,38 @@ chrome.extension.sendMessage({}, function(response) {
                 'dcnews.ro',
                 'rdo.ro',
                 'bzi.ro',
+                'VIATASANATOASA.BIZ',
+                'VEZI.BIZ',
+                'krespy-ro.com',
+                'DORCALATOR.BIZ',
+                'ROMANI-BUNI.INFO',
+                'ROMANIASTAR.RO',
+                'romaniaa.ro',
+                'STIRIREALE.BIZ',
+                'STIRIREALE.INFO',
+                'ROMANUL.CO.UK',
+                'EXTRANEWS.RO',
+                'FRIP.RO',
+                'SOFERI.BIZ',
+                'CLICKPOLITIC.RO',
+                'DANANDRONIC.NET',
+                'FRUMUSETILEROMANIEI.BIZ',
+                'LOON.RO',
+                'POVESTEA.ME',
+                'RADIOROCO.INFO',
+                'chestii.net',
+                'ZZE.RO',
+                'ANTENA1HOTNEWS.BIZ',
+                'BUNAZIUA.INFO',
+                'NEBUNATICA.NET',
+                'NUMAI.TOP',
+                'STIRIONLINE24.PW',
+                'STIRIONLINE19.PW',
+                'STIREA9.PW',
+                'IUBESCROMANIA.BIZ',
+                'ASTAZI.BIZ',
+                'stiri24ore.ro',
+                'stirideultimaora.net',
                 'socialistul.com'
             ];
 
