@@ -162,7 +162,8 @@ chrome.extension.sendMessage({}, function(response) {
                 'ASTAZI.BIZ',
                 'stiri24ore.ro',
                 'stirideultimaora.net',
-                'socialistul.com'
+                'socialistul.com',
+                'exclusivitate.org'
             ];
 
             var didScroll = false;
