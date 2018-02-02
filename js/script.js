@@ -1,4 +1,5 @@
-chrome.extension.sendMessage({}, function(response) {
+let target = chrome.runtime || browser.runtime;
+target.sendMessage({}, function(response) {
     var readyStateCheckInterval = setInterval(function() {
         if (document.readyState === "complete") {
             jQuery.expr[":"].icontains = jQuery.expr.createPseudo(function (arg) {
