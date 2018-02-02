@@ -161,7 +161,9 @@ chrome.extension.sendMessage({}, function(response) {
                 'IUBESCROMANIA.BIZ',
                 'ASTAZI.BIZ',
                 'stiri24ore.ro',
-                'stirideultimaora.net'
+                'stirideultimaora.net',
+                'socialistul.com',
+                'exclusivitate.org'
             ];
 
             var didScroll = false;
